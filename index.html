@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>عرووض | دليلك لأقوى العروض والخصومات</title>
+  <meta property="og:title" content="عرووض | دليلك لأقوى العروض والخصومات" />
+  <meta property="og:description" content="اكتشف أحدث العروض والخصومات في جميع المجالات بمنطقتك في مكان واحد!" />
+  <meta property="og:type" content="website" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+  <link rel="stylesheet" href="style.css?v=1" />
+</head>
+<body>
+
+  <!-- شريط علوي -->
+  <header class="navbar">
+    <div class="nav-container">
+      <a href="#" class="brand">
+        <div class="brand-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4">
+            <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/>
+            <line x1="7" y1="7" x2="7.01" y2="7"/>
+          </svg>
+        </div>
+        <div>
+          <strong>عرووض</strong>
+          <span>كل خصومات منطقتك في مكان واحد</span>
+        </div>
+      </a>
+
+      <div class="nav-actions">
+        <a href="#featuredSection" class="nav-pill">🔥 المميزة</a>
+        <a href="#placesSection" class="nav-pill">🏪 الأماكن</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- سلايدر البنارات الإعلانية -->
+  <section class="banners-wrapper" id="bannersWrapper">
+    <div class="swiper banners-swiper">
+      <div class="swiper-wrapper" id="bannersContainer"></div>
+      <div class="swiper-button-next banner-next"></div>
+      <div class="swiper-button-prev banner-prev"></div>
+      <div class="swiper-pagination banner-pagination"></div>
+    </div>
+  </section>
+
+  <!-- شريط البحث والفلاتر -->
+  <section class="search-section">
+    <div class="search-card">
+      <div class="search-row">
+        <input type="text" id="searchInput" class="search-input" placeholder="🔍 ابحث عن عرض، منتج، اسم محل، أو شارع..." />
+        <select id="areaFilter" class="area-select">
+          <option value="all">📍 كل الأحياء / المناطق</option>
+        </select>
+      </div>
+
+      <div class="swiper categories-swiper">
+        <div class="swiper-wrapper" id="categoriesTabs">
+          <div class="swiper-slide">
+            <button class="cat-pill active" data-cat="all">✨ كل المجالات</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <main class="main-container">
+    <!-- قسم أقوى العروض المميزة -->
+    <section class="block-section featured-block" id="featuredSection" style="display:none;">
+      <div class="block-header">
+        <div>
+          <h2>🔥 أقوى العروض المميزة</h2>
+          <p>أفضل الخصومات المختارة لك اليوم</p>
+        </div>
+      </div>
+      <div class="swiper featured-swiper">
+        <div class="swiper-wrapper" id="featuredContainer"></div>
+        <div class="swiper-button-next"></div>
+        <div class="swiper-button-prev"></div>
+        <div class="swiper-pagination"></div>
+      </div>
+    </section>
+
+    <!-- قسم الأماكن والمحلات المشاركة -->
+    <section class="block-section" id="placesSection" style="display:none;">
+      <div class="block-header">
+        <div>
+          <h2>🏪 أماكن ومحلات مشاركة</h2>
+          <p>اضغط على أي مكان لعرض كل عروضه وعنوانه وأرقام التواصل</p>
+        </div>
+      </div>
+      <div class="swiper places-swiper">
+        <div class="swiper-wrapper" id="placesContainer"></div>
+        <div class="swiper-button-next"></div>
+        <div class="swiper-button-prev"></div>
+      </div>
+    </section>
+
+    <!-- كل العروض -->
+    <section class="block-section">
+      <div class="block-header">
+        <div>
+          <h2 id="offersSectionTitle">🎯 أحدث العروض</h2>
+          <p id="offersCountText">جاري تحميل العروض...</p>
+        </div>
+      </div>
+      <div class="offers-grid" id="offersGrid"></div>
+    </section>
+  </main>
+
+  <!-- الفوتر -->
+  <footer>
+    <h3>منصة عرووض 🏷️</h3>
+    <p>نجمع لك أقوى العروض والخصومات في منطقتك في جميع المجالات</p>
+  </footer>
+
+  <!-- نافذة تفاصيل المكان وكل عروضه -->
+  <div class="modal-overlay" id="placeModalOverlay" onclick="if(event.target===this) closeModal('placeModalOverlay')">
+    <div class="modal-box place-modal">
+      <button class="close-modal-btn" onclick="closeModal('placeModalOverlay')">✕</button>
+      <div id="placeModalBody"></div>
+    </div>
+  </div>
+
+  <!-- نافذة تفاصيل العرض الواحد (والمشاركة) -->
+  <div class="modal-overlay" id="offerModalOverlay" onclick="if(event.target===this) closeModal('offerModalOverlay')">
+    <div class="modal-box offer-modal">
+      <button class="close-modal-btn" onclick="closeModal('offerModalOverlay')">✕</button>
+      <div id="offerModalBody"></div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+  <script src="app.js?v=1"></script>
+</body>
+</html>
