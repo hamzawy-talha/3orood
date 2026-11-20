@@ -1,1 +1,912 @@
 
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>لوحة تحكم عرووض</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    :root {
+      --navy: #0F172A;
+      --hot: #FF4D2D;
+      --amber: #F59E0B;
+      --teal: #0D9488;
+      --bg: #F4F6FA;
+      --border: #E2E8F0;
+      --danger: #DC2626;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Cairo', sans-serif; background: var(--bg); color: var(--navy); min-height: 100vh; }
+
+    /* شاشة الدخول */
+    .login-screen {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      background: linear-gradient(135deg, #0F172A, #1E293B);
+    }
+
+    .login-card {
+      background: #fff;
+      width: 100%;
+      max-width: 400px;
+      padding: 32px 26px;
+      border-radius: 22px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
+      text-align: center;
+    }
+
+    .brand-badge {
+      width: 64px;
+      height: 64px;
+      margin: 0 auto 12px;
+      border-radius: 18px;
+      background: linear-gradient(135deg, var(--hot), var(--amber));
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.8rem;
+    }
+
+    .login-card h2 { font-size: 1.45rem; font-weight: 900; margin-bottom: 4px; }
+    .login-card p { font-size: 0.88rem; color: #64748B; margin-bottom: 20px; }
+
+    .login-form { display: grid; gap: 14px; text-align: right; }
+    .login-form label { display: block; font-size: 0.85rem; font-weight: 700; margin-bottom: 4px; }
+    .login-form input {
+      width: 100%;
+      padding: 11px 14px;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      font-family: inherit;
+      font-size: 0.95rem;
+      outline: none;
+    }
+    .login-form input:focus { border-color: var(--hot); }
+
+    .login-btn {
+      width: 100%;
+      padding: 12px;
+      background: var(--hot);
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      font-family: inherit;
+      font-size: 1rem;
+      font-weight: 800;
+      cursor: pointer;
+    }
+    .login-btn:disabled { background: #94A3B8; cursor: not-allowed; }
+
+    .login-error {
+      background: #FEF2F2;
+      color: var(--danger);
+      border: 1px solid #FECACA;
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      display: none;
+    }
+
+    /* الداشبورد */
+    .dashboard-screen { display: none; padding: 20px; }
+    .container { max-width: 1180px; margin: 0 auto; }
+
+    .topbar {
+      background: linear-gradient(135deg, var(--navy), #1E293B);
+      color: #fff;
+      padding: 18px 24px;
+      border-radius: 18px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    .topbar h1 { font-size: 1.35rem; font-weight: 900; }
+    .user-email { font-size: 0.8rem; opacity: 0.85; }
+
+    .logout-btn {
+      background: rgba(255, 255, 255, 0.14);
+      color: #fff;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      padding: 8px 16px;
+      border-radius: 10px;
+      font-family: inherit;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .logout-btn:hover { background: var(--danger); border-color: var(--danger); }
+
+    /* التبويبات الـ 4 */
+    .nav-tabs {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .tab-btn {
+      background: #fff;
+      border: 2px solid var(--border);
+      padding: 14px 10px;
+      border-radius: 14px;
+      font-family: inherit;
+      font-size: 0.98rem;
+      font-weight: 800;
+      color: var(--navy);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: 0.2s;
+    }
+    .tab-btn.active {
+      background: var(--navy);
+      color: #fff;
+      border-color: var(--navy);
+      box-shadow: 0 8px 20px rgba(15, 23, 42, 0.18);
+    }
+    .tab-count {
+      background: rgba(0, 0, 0, 0.08);
+      padding: 1px 8px;
+      border-radius: 999px;
+      font-size: 0.8rem;
+    }
+    .tab-btn.active .tab-count { background: var(--hot); color: #fff; }
+
+    .view-panel { display: none; }
+    .view-panel.active { display: block; }
+
+    .card {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 20px;
+      box-shadow: 0 4px 16px rgba(15, 23, 42, 0.04);
+    }
+
+    .panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 2px solid var(--bg);
+    }
+    .panel-header h2 { font-size: 1.2rem; font-weight: 900; }
+
+    .btn-add {
+      background: var(--hot);
+      color: #fff;
+      border: none;
+      padding: 10px 18px;
+      border-radius: 12px;
+      font-family: inherit;
+      font-size: 0.92rem;
+      font-weight: 800;
+      cursor: pointer;
+    }
+    .btn-add:hover { background: #E03516; }
+
+    .filters-row { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 14px; }
+    .filters-row input, .filters-row select {
+      padding: 9px 14px;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      font-family: inherit;
+      font-size: 0.9rem;
+      background: #F8FAFC;
+      outline: none;
+    }
+    .filters-row input { flex: 1; min-width: 220px; }
+
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; min-width: 650px; }
+    th, td { text-align: right; padding: 11px 10px; border-bottom: 1px solid #F1F5F9; font-size: 0.9rem; vertical-align: middle; }
+    th { background: #F8FAFC; font-weight: 800; color: #475569; }
+
+    img.thumb { width: 52px; height: 42px; object-fit: cover; border-radius: 8px; border: 1px solid var(--border); }
+    img.banner-thumb { width: 95px; height: 46px; object-fit: cover; border-radius: 8px; border: 1px solid var(--border); }
+
+    .badge { display: inline-block; padding: 2px 10px; border-radius: 999px; font-size: 0.76rem; font-weight: 800; }
+    .badge-ok { background: #DCFCE7; color: #166534; }
+    .badge-off { background: #F1F5F9; color: #64748B; }
+    .badge-hot { background: #FFF1F2; color: var(--hot); }
+
+    .actions-cell { display: flex; gap: 6px; }
+    .btn-edit, .btn-delete {
+      border: none;
+      padding: 6px 11px;
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 0.8rem;
+      font-weight: 700;
+      cursor: pointer;
+      color: #fff;
+    }
+    .btn-edit { background: var(--navy); }
+    .btn-delete { background: var(--danger); }
+
+    /* المودال */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.6);
+      backdrop-filter: blur(3px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      z-index: 200;
+    }
+    .modal-overlay.open { display: flex; }
+
+    .modal-box {
+      background: #fff;
+      width: 100%;
+      max-width: 520px;
+      border-radius: 18px;
+      overflow: hidden;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+    }
+
+    .modal-head {
+      background: var(--navy);
+      color: #fff;
+      padding: 15px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .close-modal {
+      background: rgba(255,255,255,0.18);
+      border: none;
+      color: #fff;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      cursor: pointer;
+    }
+
+    .modal-body { padding: 18px 20px; display: grid; gap: 12px; max-height: 82vh; overflow-y: auto; }
+    .two-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .field label { display: block; font-size: 0.82rem; font-weight: 700; margin-bottom: 4px; color: #334155; }
+    .field input, .field select, .field textarea {
+      width: 100%;
+      padding: 9px 12px;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      font-family: inherit;
+      font-size: 0.92rem;
+      outline: none;
+    }
+    .field input:focus, .field select:focus, .field textarea:focus { border-color: var(--hot); }
+
+    .check-row { display: flex; gap: 18px; align-items: center; flex-wrap: wrap; padding: 4px 0; }
+    .check-row label { display: inline-flex; align-items: center; gap: 6px; font-size: 0.88rem; font-weight: 700; cursor: pointer; }
+
+    .btn-save {
+      width: 100%;
+      padding: 12px;
+      background: var(--hot);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      font-family: inherit;
+      font-size: 1rem;
+      font-weight: 800;
+      cursor: pointer;
+    }
+    .btn-save:disabled { background: #94A3B8; cursor: not-allowed; }
+    .empty-msg { text-align: center; padding: 30px; color: #64748B; font-weight: 600; }
+
+    @media (max-width: 700px) {
+      .nav-tabs { grid-template-columns: 1fr 1fr; }
+      .two-cols { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- 1. شاشة تسجيل الدخول -->
+<div class="login-screen" id="login-screen">
+  <div class="login-card">
+    <div class="brand-badge">🏷️</div>
+    <h2>لوحة تحكم عرووض</h2>
+    <p>سجّل الدخول بحساب الأدمن لإدارة البنارات والأماكن والعروض</p>
+
+    <form class="login-form" id="login-form" onsubmit="event.preventDefault(); handleLogin(); return false;">
+      <div class="login-error" id="login-error"></div>
+      <div>
+        <label>البريد الإلكتروني</label>
+        <input type="email" id="login-email" placeholder="admin@orood.com" autocapitalize="none" autocorrect="off" autocomplete="email" required />
+      </div>
+      <div>
+        <label>كلمة المرور</label>
+        <input type="password" id="login-password" placeholder="••••••••" required />
+      </div>
+      <button type="button" class="login-btn" id="login-btn" onclick="handleLogin()">دخول للوحة التحكم 🔐</button>
+    </form>
+  </div>
+</div>
+
+<!-- 2. شاشة الداشبورد -->
+<div class="dashboard-screen" id="dashboard-screen">
+  <div class="container">
+    <div class="topbar">
+      <div>
+        <h1>🏷️ لوحة تحكم منصة عرووض</h1>
+        <div class="user-email" id="admin-email-display"></div>
+      </div>
+      <button class="logout-btn" onclick="logout()">🚪 تسجيل خروج</button>
+    </div>
+
+    <div class="nav-tabs">
+      <button class="tab-btn active" id="tab-btn-offers" onclick="switchTab('offers')">
+        <span>🔥 العروض</span>
+        <span class="tab-count" id="cnt-offers">0</span>
+      </button>
+      <button class="tab-btn" id="tab-btn-places" onclick="switchTab('places')">
+        <span>🏪 الأماكن</span>
+        <span class="tab-count" id="cnt-places">0</span>
+      </button>
+      <button class="tab-btn" id="tab-btn-categories" onclick="switchTab('categories')">
+        <span>📁 المجالات</span>
+        <span class="tab-count" id="cnt-categories">0</span>
+      </button>
+      <button class="tab-btn" id="tab-btn-banners" onclick="switchTab('banners')">
+        <span>🖼️ البنارات</span>
+        <span class="tab-count" id="cnt-banners">0</span>
+      </button>
+    </div>
+
+    <!-- تبويب العروض -->
+    <div class="view-panel active" id="panel-offers">
+      <div class="card">
+        <div class="panel-header">
+          <h2>إدارة العروض</h2>
+          <button class="btn-add" onclick="openOfferModal()">+ إضافة عرض جديد</button>
+        </div>
+        <div class="filters-row">
+          <input type="text" id="filter-offer-search" placeholder="🔍 ابحث باسم العرض..." oninput="renderOffers()" />
+          <select id="filter-offer-place" onchange="renderOffers()">
+            <option value="all">كل الأماكن والمحلات</option>
+          </select>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>الصورة</th>
+                <th>العرض</th>
+                <th>المكان</th>
+                <th>السعر</th>
+                <th>الحالة</th>
+                <th>إجراءات</th>
+              </tr>
+            </thead>
+            <tbody id="tbody-offers"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- تبويب الأماكن -->
+    <div class="view-panel" id="panel-places">
+      <div class="card">
+        <div class="panel-header">
+          <h2>إدارة الأماكن والمحلات</h2>
+          <button class="btn-add" onclick="openPlaceModal()">+ إضافة مكان جديد</button>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>اللوجو</th>
+                <th>اسم المكان</th>
+                <th>المجال</th>
+                <th>المنطقة والعنوان</th>
+                <th>الهاتف</th>
+                <th>إجراءات</th>
+              </tr>
+            </thead>
+            <tbody id="tbody-places"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- تبويب المجالات -->
+    <div class="view-panel" id="panel-categories">
+      <div class="card">
+        <div class="panel-header">
+          <h2>إدارة المجالات</h2>
+          <button class="btn-add" onclick="openCatModal()">+ إضافة مجال جديد</button>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>الترتيب</th>
+                <th>الأيقونة</th>
+                <th>اسم المجال</th>
+                <th>إجراءات</th>
+              </tr>
+            </thead>
+            <tbody id="tbody-categories"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- تبويب البنارات -->
+    <div class="view-panel" id="panel-banners">
+      <div class="card">
+        <div class="panel-header">
+          <h2>إدارة البنارات الإعلانية</h2>
+          <button class="btn-add" onclick="openBannerModal()">+ إضافة بانر جديد</button>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>الترتيب</th>
+                <th>صورة البانر</th>
+                <th>العنوان</th>
+                <th>الحالة</th>
+                <th>إجراءات</th>
+              </tr>
+            </thead>
+            <tbody id="tbody-banners"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- مودال العرض -->
+<div class="modal-overlay" id="offer-modal" onclick="if(event.target===this) closeModal('offer-modal')">
+  <div class="modal-box">
+    <div class="modal-head">
+      <h3 id="offer-modal-title">إضافة عرض جديد</h3>
+      <button class="close-modal" onclick="closeModal('offer-modal')">✕</button>
+    </div>
+    <form class="modal-body" id="offer-form">
+      <input type="hidden" id="offer-id" />
+      <div class="field">
+        <label>المكان / المحل التابع له العرض *</label>
+        <select id="offer-place" required></select>
+      </div>
+      <div class="field">
+        <label>عنوان العرض *</label>
+        <input type="text" id="offer-title" placeholder="مثلاً: خصم 30% على الوجبة المزدوجة" required />
+      </div>
+      <div class="field">
+        <label>تفاصيل العرض</label>
+        <textarea id="offer-desc" rows="2" placeholder="اشرح محتويات العرض أو شروطه..."></textarea>
+      </div>
+      <div class="two-cols">
+        <div class="field">
+          <label>السعر بعد العرض (ج.م)</label>
+          <input type="number" step="0.01" id="offer-new-price" placeholder="مثلاً: 210" />
+        </div>
+        <div class="field">
+          <label>السعر قبل العرض (اختياري)</label>
+          <input type="number" step="0.01" id="offer-old-price" placeholder="مثلاً: 320" />
+        </div>
+      </div>
+      <div class="two-cols">
+        <div class="field">
+          <label>نص شارة الخصم (اختياري)</label>
+          <input type="text" id="offer-discount" placeholder="مثلاً: 1+1 مجاناً أو خصم 40%" />
+        </div>
+        <div class="field">
+          <label>تاريخ انتهاء العرض</label>
+          <input type="date" id="offer-end-date" />
+        </div>
+      </div>
+      <div class="field">
+        <label>رفع صورة للعرض</label>
+        <input type="file" id="offer-img-file" accept="image/*" />
+      </div>
+      <div class="field">
+        <label>أو رابط صورة جاهز</label>
+        <input type="url" id="offer-img-url" placeholder="https://..." />
+      </div>
+      <div class="check-row">
+        <label><input type="checkbox" id="offer-featured" /> 🔥 عرض مميز (يظهر في القسم العلوي)</label>
+        <label><input type="checkbox" id="offer-active" checked /> ✅ نشط بالموقع</label>
+      </div>
+      <button type="submit" class="btn-save" id="offer-save-btn">حفظ العرض</button>
+    </form>
+  </div>
+</div>
+
+<!-- مودال المكان -->
+<div class="modal-overlay" id="place-modal" onclick="if(event.target===this) closeModal('place-modal')">
+  <div class="modal-box">
+    <div class="modal-head">
+      <h3 id="place-modal-title">إضافة مكان جديد</h3>
+      <button class="close-modal" onclick="closeModal('place-modal')">✕</button>
+    </div>
+    <form class="modal-body" id="place-form">
+      <input type="hidden" id="place-id" />
+      <div class="two-cols">
+        <div class="field">
+          <label>اسم المكان / المحل *</label>
+          <input type="text" id="place-name" required />
+        </div>
+        <div class="field">
+          <label>المجال *</label>
+          <select id="place-category" required></select>
+        </div>
+      </div>
+      <div class="two-cols">
+        <div class="field">
+          <label>الحي / المنطقة</label>
+          <input type="text" id="place-area" placeholder="مثلاً: وسط البلد" />
+        </div>
+        <div class="field">
+          <label>رقم الهاتف / الواتساب *</label>
+          <input type="text" id="place-phone" placeholder="201000000000" required />
+        </div>
+      </div>
+      <div class="field">
+        <label>العنوان بالتفصيل *</label>
+        <input type="text" id="place-address" placeholder="الشارع، المعلم المميز، الدور..." required />
+      </div>
+      <div class="field">
+        <label>رابط خرائط جوجل (اختياري)</label>
+        <input type="url" id="place-map" placeholder="https://maps.google.com/..." />
+      </div>
+      <div class="field">
+        <label>رفع لوجو المكان</label>
+        <input type="file" id="place-logo-file" accept="image/*" />
+      </div>
+      <div class="field">
+        <label>أو رابط اللوجو</label>
+        <input type="url" id="place-logo-url" placeholder="https://..." />
+      </div>
+      <button type="submit" class="btn-save" id="place-save-btn">حفظ المكان</button>
+    </form>
+  </div>
+</div>
+
+<!-- مودال المجال -->
+<div class="modal-overlay" id="cat-modal" onclick="if(event.target===this) closeModal('cat-modal')">
+  <div class="modal-box">
+    <div class="modal-head">
+      <h3 id="cat-modal-title">إضافة مجال جديد</h3>
+      <button class="close-modal" onclick="closeModal('cat-modal')">✕</button>
+    </div>
+    <form class="modal-body" id="cat-form">
+      <input type="hidden" id="cat-id" />
+      <div class="field">
+        <label>اسم المجال *</label>
+        <input type="text" id="cat-name" placeholder="مثلاً: مطاعم وكافيهات" required />
+      </div>
+      <div class="two-cols">
+        <div class="field">
+          <label>الأيقونة (إيموجي)</label>
+          <input type="text" id="cat-icon" value="🏷️" />
+        </div>
+        <div class="field">
+          <label>الترتيب</label>
+          <input type="number" id="cat-sort" value="0" />
+        </div>
+      </div>
+      <button type="submit" class="btn-save" id="cat-save-btn">حفظ المجال</button>
+    </form>
+  </div>
+</div>
+
+<!-- مودال البانر -->
+<div class="modal-overlay" id="banner-modal" onclick="if(event.target===this) closeModal('banner-modal')">
+  <div class="modal-box">
+    <div class="modal-head">
+      <h3 id="banner-modal-title">إضافة بانر جديد</h3>
+      <button class="close-modal" onclick="closeModal('banner-modal')">✕</button>
+    </div>
+    <form class="modal-body" id="banner-form">
+      <input type="hidden" id="banner-id" />
+      <div class="field">
+        <label>عنوان البانر (يظهر فوق الصورة - اختياري)</label>
+        <input type="text" id="banner-title" placeholder="مثلاً: خصومات نهاية الأسبوع حتى 50%" />
+      </div>
+      <div class="field">
+        <label>رفع صورة البانر *</label>
+        <input type="file" id="banner-img-file" accept="image/*" />
+      </div>
+      <div class="field">
+        <label>أو رابط صورة البانر</label>
+        <input type="url" id="banner-img-url" placeholder="https://..." />
+      </div>
+      <div class="two-cols">
+        <div class="field">
+          <label>رابط عند الضغط (اختياري)</label>
+          <input type="url" id="banner-link" placeholder="https://..." />
+        </div>
+        <div class="field">
+          <label>الترتيب</label>
+          <input type="number" id="banner-sort" value="0" />
+        </div>
+      </div>
+      <div class="check-row">
+        <label><input type="checkbox" id="banner-active" checked /> ✅ تفعيل البانر في الموقع</label>
+      </div>
+      <button type="submit" class="btn-save" id="banner-save-btn">حفظ البانر</button>
+    </form>
+  </div>
+</div>
+
+<script>
+  // === ضع بيانات مشروع Supabase الجديد هنا ===
+  const SUPABASE_URL = 'ضع_هنا_رابط_المشروع_الجديد';
+  const SUPABASE_KEY = 'ضع_هنا_مفتاح_sb_publishable_الجديد';
+  const BUCKET_NAME = 'offers-images';
+
+  const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+  let offers = [], places = [], categories = [], banners = [];
+  let placesMap = {}, categoriesMap = {};
+
+  // === Auth ===
+  async function checkSession() {
+    const { data: { session } } = await db.auth.getSession();
+    handleAuthState(session);
+    db.auth.onAuthStateChange((_ev, newSession) => handleAuthState(newSession));
+  }
+
+  function handleAuthState(session) {
+    const loginEl = document.getElementById('login-screen');
+    const dashEl = document.getElementById('dashboard-screen');
+    if (session && session.user) {
+      loginEl.style.display = 'none';
+      dashEl.style.display = 'block';
+      document.getElementById('admin-email-display').textContent = `الحساب: ${session.user.email}`;
+      loadAll();
+    } else {
+      dashEl.style.display = 'none';
+      loginEl.style.display = 'flex';
+    }
+  }
+
+  async function handleLogin() {
+    const btn = document.getElementById('login-btn');
+    const err = document.getElementById('login-error');
+    const email = document.getElementById('login-email').value.trim();
+    const password = document.getElementById('login-password').value;
+
+    err.style.display = 'none';
+    if (!email || !password) {
+      err.textContent = '⚠️ أدخل البريد الإلكتروني وكلمة المرور';
+      err.style.display = 'block';
+      return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = 'جاري التحقق...';
+    const { error } = await db.auth.signInWithPassword({ email, password });
+    btn.disabled = false;
+    btn.textContent = 'دخول للوحة التحكم 🔐';
+
+    if (error) {
+      err.textContent = '❌ ' + error.message;
+      err.style.display = 'block';
+    } else {
+      document.getElementById('login-form').reset();
+    }
+  }
+
+  async function logout() { await db.auth.signOut(); }
+
+  function switchTab(name) {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.view-panel').forEach(p => p.classList.remove('active'));
+    document.getElementById(`tab-btn-${name}`).classList.add('active');
+    document.getElementById(`panel-${name}`).classList.add('active');
+  }
+
+  function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+  async function uploadImg(file) {
+    if (!file) return null;
+    const ext = file.name.split('.').pop().toLowerCase() || 'jpg';
+    const name = `img-${Date.now()}-${Math.floor(Math.random() * 1000)}.${ext}`;
+    const { error } = await db.storage.from(BUCKET_NAME).upload(name, file);
+    if (error) throw new Error('فشل رفع الصورة: ' + error.message);
+    return db.storage.from(BUCKET_NAME).getPublicUrl(name).data.publicUrl;
+  }
+
+  // === جلب كل البيانات ===
+  async function loadAll() {
+    const [cRes, pRes, oRes, bRes] = await Promise.all([
+      db.from('categories').select('*').order('sort', { ascending: true }),
+      db.from('places').select('*').order('id', { ascending: false }),
+      db.from('offers').select('*').order('id', { ascending: false }),
+      db.from('banners').select('*').order('sort', { ascending: true })
+    ]);
+
+    categories = cRes.data || [];
+    places = pRes.data || [];
+    offers = oRes.data || [];
+    banners = bRes.data || [];
+
+    categoriesMap = {};
+    categories.forEach(c => { categoriesMap[String(c.id)] = c; });
+
+    placesMap = {};
+    places.forEach(p => { placesMap[String(p.id)] = p; });
+
+    document.getElementById('cnt-categories').textContent = categories.length;
+    document.getElementById('cnt-places').textContent = places.length;
+    document.getElementById('cnt-offers').textContent = offers.length;
+    document.getElementById('cnt-banners').textContent = banners.length;
+
+    syncSelects();
+    renderCategories();
+    renderPlaces();
+    renderOffers();
+    renderBanners();
+  }
+
+  function syncSelects() {
+    const placeCat = document.getElementById('place-category');
+    placeCat.innerHTML = '<option value="">-- اختر المجال --</option>' +
+      categories.map(c => `<option value="${c.id}">${c.icon || ''} ${c.name}</option>`).join('');
+
+    const offerPlace = document.getElementById('offer-place');
+    const filterPlace = document.getElementById('filter-offer-place');
+    const opts = places.map(p => `<option value="${p.id}">${p.name} (${p.area || ''})</option>`).join('');
+    offerPlace.innerHTML = '<option value="">-- اختر المكان --</option>' + opts;
+    filterPlace.innerHTML = '<option value="all">كل الأماكن والمحلات</option>' + opts;
+  }
+
+  // === 1. العروض ===
+  function renderOffers() {
+    const q = document.getElementById('filter-offer-search').value.trim().toLowerCase();
+    const pFilter = document.getElementById('filter-offer-place').value;
+    const list = offers.filter(o =>
+      (o.title || '').toLowerCase().includes(q) &&
+      (pFilter === 'all' || String(o.place_id) === String(pFilter))
+    );
+
+    const tbody = document.getElementById('tbody-offers');
+    tbody.innerHTML = list.length === 0
+      ? '<tr><td colspan="6" class="empty-msg">لا توجد عروض</td></tr>'
+      : list.map(o => {
+          const pl = placesMap[String(o.place_id)];
+          return `
+            <tr>
+              <td>${o.image ? `<img src="${o.image}" class="thumb" />` : '—'}</td>
+              <td>
+                <strong>${o.title}</strong>
+                ${o.is_featured ? '<span class="badge badge-hot">مميز 🔥</span>' : ''}
+              </td>
+              <td>${pl ? pl.name : '-'}</td>
+              <td>
+                ${o.new_price ? `<strong>${o.new_price} ج</strong>` : (o.discount_text || '-')}
+                ${o.old_price ? `<del style="color:#94a3b8;font-size:0.8rem;">${o.old_price} ج</del>` : ''}
+              </td>
+              <td><span class="badge ${o.is_active ? 'badge-ok' : 'badge-off'}">${o.is_active ? 'نشط' : 'مخفي'}</span></td>
+              <td>
+                <div class="actions-cell">
+                  <button class="btn-edit" onclick="openOfferModal(${o.id})">✏️ تعديل</button>
+                  <button class="btn-delete" onclick="deleteRow('offers', ${o.id})">🗑️</button>
+                </div>
+              </td>
+            </tr>
+          `;
+        }).join('');
+  }
+
+  function openOfferModal(id = null) {
+    document.getElementById('offer-form').reset();
+    document.getElementById('offer-id').value = '';
+    document.getElementById('offer-active').checked = true;
+    if (id) {
+      const o = offers.find(x => x.id === id);
+      if (o) {
+        document.getElementById('offer-modal-title').textContent = '✏️ تعديل العرض';
+        document.getElementById('offer-id').value = o.id;
+        document.getElementById('offer-place').value = o.place_id || '';
+        document.getElementById('offer-title').value = o.title || '';
+        document.getElementById('offer-desc').value = o.description || '';
+        document.getElementById('offer-new-price').value = o.new_price ?? '';
+        document.getElementById('offer-old-price').value = o.old_price ?? '';
+        document.getElementById('offer-discount').value = o.discount_text || '';
+        document.getElementById('offer-end-date').value = o.end_date || '';
+        document.getElementById('offer-img-url').value = o.image || '';
+        document.getElementById('offer-featured').checked = !!o.is_featured;
+        document.getElementById('offer-active').checked = o.is_active !== false;
+      }
+    } else {
+      document.getElementById('offer-modal-title').textContent = '+ إضافة عرض جديد';
+    }
+    document.getElementById('offer-modal').classList.add('open');
+  }
+
+  document.getElementById('offer-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const btn = document.getElementById('offer-save-btn');
+    btn.disabled = true; btn.textContent = 'جاري الحفظ...';
+    try {
+      const id = document.getElementById('offer-id').value;
+      const file = document.getElementById('offer-img-file').files[0];
+      let image = document.getElementById('offer-img-url').value.trim() || null;
+      if (file) image = await uploadImg(file);
+
+      const np = document.getElementById('offer-new-price').value;
+      const op = document.getElementById('offer-old-price').value;
+      const payload = {
+        place_id: parseInt(document.getElementById('offer-place').value),
+        title: document.getElementById('offer-title').value.trim(),
+        description: document.getElementById('offer-desc').value.trim() || null,
+        new_price: np !== '' ? parseFloat(np) : null,
+        old_price: op !== '' ? parseFloat(op) : null,
+        discount_text: document.getElementById('offer-discount').value.trim() || null,
+        end_date: document.getElementById('offer-end-date').value || null,
+        is_featured: document.getElementById('offer-featured').checked,
+        is_active: document.getElementById('offer-active').checked,
+        image
+      };
+
+      const res = id
+        ? await db.from('offers').update(payload).eq('id', id)
+        : await db.from('offers').insert([payload]);
+      if (res.error) throw res.error;
+      closeModal('offer-modal');
+      await loadAll();
+    } catch (err) {
+      alert('خطأ: ' + err.message);
+    } finally {
+      btn.disabled = false; btn.textContent = 'حفظ العرض';
+    }
+  });
+
+  // === 2. الأماكن ===
+  function renderPlaces() {
+    const tbody = document.getElementById('tbody-places');
+    tbody.innerHTML = places.length === 0
+      ? '<tr><td colspan="6" class="empty-msg">لا توجد أماكن مسجلة</td></tr>'
+      : places.map(p => {
+          const cat = categoriesMap[String(p.category_id)];
+          return `
+            <tr>
+              <td>${p.logo ? `<img src="${p.logo}" class="thumb" />` : '🏪'}</td>
+              <td><strong>${p.name}</strong></td>
+              <td>${cat ? `${cat.icon} ${cat.name}` : '-'}</td>
+              <td>${p.area ? p.area + ' - ' : ''}${p.address}</td>
+              <td>${p.phone}</td>
+              <td>
+                <div class="actions-cell">
+                  <button class="btn-edit" onclick="openPlaceModal(${p.id})">✏️ تعديل</button>
+                  <button class="btn-delete" onclick="deleteRow('places', ${p.id})">🗑️</button>
+                </div>
+              </td>
+            </tr>
+          `;
+        }).join('');
+  }
+
+  function openPlaceModal(id = null) {
+    document.getElementById('place-form').reset();
+    document.getElementById('place-id').value = '';
+    if (id) {
+      const p = places.find(x => x.id === id);
+      if (p) {
+        document.getElementById('place-modal-title').textContent = '✏️ تعديل المكان';
+        document.ge
