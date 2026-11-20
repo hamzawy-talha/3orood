@@ -1,6 +1,7 @@
 // === ضع بيانات مشروع Supabase الجديد هنا ===
-const SUPABASE_URL = 'ضع_هنا_رابط_المشروع_الجديد';
-const SUPABASE_KEY = 'ضع_هنا_مفتاح_sb_publishable_الجديد';
+
+const SUPABASE_URL = 'https://vioecyqjtqfzvxecondz.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_EuIIdOoYQLpm20InGSTVnA_yNbosYHv';
 
 const DEFAULT_OFFER_IMG = 'https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?w=700&q=80';
 const DEFAULT_PLACE_LOGO = 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=300&q=80';
