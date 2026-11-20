@@ -1,0 +1,536 @@
+:root {
+  --navy: #0F172A;
+  --navy-light: #1E293B;
+  --hot: #FF4D2D;
+  --hot-dark: #E03516;
+  --amber: #F59E0B;
+  --teal: #0D9488;
+  --bg: #F4F6FA;
+  --card: #FFFFFF;
+  --text: #0F172A;
+  --muted: #64748B;
+  --border: #E2E8F0;
+  --shadow: 0 8px 26px rgba(15, 23, 42, 0.07);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Cairo', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+/* شريط علوي */
+.navbar {
+  position: sticky;
+  top: 0;
+  z-index: 90;
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  padding: 10px 18px;
+}
+
+.nav-container {
+  max-width: 1240px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  color: var(--navy);
+}
+
+.brand-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, var(--hot), var(--amber));
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 9px;
+  box-shadow: 0 6px 16px rgba(255, 77, 45, 0.28);
+}
+.brand-icon svg { width: 100%; height: 100%; }
+
+.brand strong { display: block; font-size: 1.35rem; font-weight: 900; line-height: 1.1; }
+.brand span { font-size: 0.76rem; color: var(--muted); font-weight: 700; }
+
+.nav-actions { display: flex; gap: 8px; }
+.nav-pill {
+  text-decoration: none;
+  background: var(--bg);
+  color: var(--navy);
+  padding: 7px 14px;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 800;
+  border: 1px solid var(--border);
+  transition: 0.2s;
+}
+.nav-pill:hover { background: var(--navy); color: #fff; }
+
+/* سلايدر البنارات */
+.banners-wrapper {
+  max-width: 1240px;
+  margin: 18px auto 0;
+  padding: 0 16px;
+}
+
+.banners-swiper {
+  border-radius: 22px;
+  overflow: hidden;
+  box-shadow: 0 14px 36px rgba(15, 23, 42, 0.14);
+}
+
+.banner-slide {
+  position: relative;
+  height: 360px;
+  background: var(--navy);
+  display: block;
+}
+
+.banner-slide img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.banner-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(15, 23, 42, 0.78) 0%, rgba(15, 23, 42, 0.1) 60%);
+  display: flex;
+  align-items: flex-end;
+  padding: 28px;
+}
+
+.banner-title {
+  color: #fff;
+  font-size: 1.65rem;
+  font-weight: 900;
+  text-shadow: 0 3px 10px rgba(0, 0, 0, 0.4);
+  max-width: 650px;
+}
+
+/* شريط البحث والتصنيفات */
+.search-section {
+  max-width: 1240px;
+  margin: 20px auto;
+  padding: 0 16px;
+}
+
+.search-card {
+  background: var(--card);
+  padding: 18px;
+  border-radius: 20px;
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border);
+}
+
+.search-row {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+
+.search-input {
+  flex: 1;
+  min-width: 240px;
+  padding: 12px 18px;
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
+  font-family: inherit;
+  font-size: 0.98rem;
+  background: #F8FAFC;
+  outline: none;
+}
+.search-input:focus { border-color: var(--hot); background: #fff; }
+
+.area-select {
+  padding: 12px 16px;
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
+  font-family: inherit;
+  font-size: 0.94rem;
+  font-weight: 700;
+  background: #F8FAFC;
+  color: var(--navy);
+  outline: none;
+  cursor: pointer;
+}
+
+.categories-swiper { padding: 4px 2px; }
+.categories-swiper .swiper-slide { width: auto; }
+
+.cat-pill {
+  border: 1.5px solid var(--border);
+  background: #F8FAFC;
+  color: var(--navy);
+  padding: 8px 18px;
+  border-radius: 999px;
+  font-family: inherit;
+  font-size: 0.9rem;
+  font-weight: 800;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: 0.2s;
+}
+.cat-pill:hover { border-color: var(--hot); color: var(--hot); }
+.cat-pill.active {
+  background: var(--navy);
+  color: #fff;
+  border-color: var(--navy);
+}
+
+/* الأقسام الرئيسية */
+.main-container {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 0 16px 50px;
+}
+
+.block-section { margin-bottom: 36px; }
+
+.featured-block {
+  background: linear-gradient(135deg, #FFF7ED 0%, #FFF1F2 100%);
+  border: 2px solid #FDBA74;
+  border-radius: 24px;
+  padding: 22px 18px;
+}
+
+.block-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 18px;
+}
+.block-header h2 { font-size: 1.45rem; font-weight: 900; color: var(--navy); }
+.block-header p { font-size: 0.88rem; color: var(--muted); font-weight: 600; }
+
+/* بطاقة المحل / المكان */
+.place-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.04);
+  transition: all 0.25s;
+}
+.place-card:hover {
+  transform: translateY(-3px);
+  border-color: var(--hot);
+  box-shadow: var(--shadow);
+}
+
+.place-logo {
+  width: 62px;
+  height: 62px;
+  border-radius: 14px;
+  object-fit: cover;
+  border: 1.5px solid var(--border);
+  background: #F1F5F9;
+  flex-shrink: 0;
+}
+
+.place-meta h4 { font-size: 1.02rem; font-weight: 800; color: var(--navy); }
+.place-meta span { display: block; font-size: 0.78rem; color: var(--muted); margin-top: 2px; }
+.place-offers-badge {
+  display: inline-block;
+  margin-top: 6px;
+  background: #FFF1F2;
+  color: var(--hot);
+  font-size: 0.74rem;
+  font-weight: 800;
+  padding: 2px 10px;
+  border-radius: 999px;
+}
+
+/* شبكة العروض */
+.offers-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 18px;
+}
+
+.featured-swiper, .places-swiper { padding: 4px 4px 36px !important; }
+
+/* بطاقة العرض */
+.offer-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.05);
+  transition: all 0.25s;
+}
+.offer-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow);
+  border-color: #CBD5E1;
+}
+
+.offer-img-box {
+  position: relative;
+  height: 190px;
+  background: #E2E8F0;
+  overflow: hidden;
+  cursor: pointer;
+}
+.offer-img-box img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.35s;
+}
+.offer-card:hover .offer-img-box img { transform: scale(1.05); }
+
+.discount-tag {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: linear-gradient(135deg, var(--hot), var(--hot-dark));
+  color: #fff;
+  font-size: 0.78rem;
+  font-weight: 900;
+  padding: 4px 12px;
+  border-radius: 999px;
+  box-shadow: 0 4px 12px rgba(255, 77, 45, 0.35);
+}
+
+.share-icon-btn {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255, 255, 255, 0.92);
+  color: var(--navy);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.95rem;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.16);
+}
+.share-icon-btn:hover { background: var(--navy); color: #fff; }
+
+.offer-body {
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  gap: 8px;
+}
+
+.offer-place-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.offer-place-btn {
+  background: #F1F5F9;
+  border: none;
+  padding: 4px 10px;
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 0.78rem;
+  font-weight: 800;
+  color: var(--navy);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+.offer-place-btn:hover { background: var(--navy); color: #fff; }
+
+.offer-end { font-size: 0.73rem; color: var(--hot); font-weight: 700; }
+
+.offer-title {
+  font-size: 1.06rem;
+  font-weight: 800;
+  color: var(--navy);
+  cursor: pointer;
+}
+
+.offer-desc {
+  font-size: 0.84rem;
+  color: var(--muted);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.offer-address {
+  font-size: 0.78rem;
+  color: #475569;
+  font-weight: 600;
+}
+
+.offer-price-row {
+  margin-top: auto;
+  padding-top: 10px;
+  border-top: 1px dashed var(--border);
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+
+.new-price { font-size: 1.25rem; font-weight: 900; color: var(--hot); }
+.old-price { font-size: 0.88rem; color: #94A3B8; text-decoration: line-through; font-weight: 700; }
+
+.offer-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.btn-call, .btn-wa {
+  text-decoration: none;
+  text-align: center;
+  padding: 8px;
+  border-radius: 10px;
+  font-size: 0.84rem;
+  font-weight: 800;
+  color: #fff;
+}
+.btn-call { background: var(--navy); }
+.btn-wa { background: #16A34A; }
+
+/* أسهم السويبر */
+.swiper-button-next, .swiper-button-prev {
+  background: #fff;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  color: var(--navy) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+.swiper-button-next::after, .swiper-button-prev::after { font-size: 14px !important; font-weight: 900; }
+.swiper-pagination-bullet-active { background: var(--hot) !important; }
+
+/* النوافذ المنبثقة */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.65);
+  backdrop-filter: blur(4px);
+  z-index: 200;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+.modal-overlay.open { display: flex; }
+
+.modal-box {
+  background: #fff;
+  width: 100%;
+  max-width: 600px;
+  max-height: 90vh;
+  overflow-y: auto;
+  border-radius: 22px;
+  position: relative;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.35);
+}
+
+.close-modal-btn {
+  position: sticky;
+  top: 12px;
+  float: left;
+  margin: 12px;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(15, 23, 42, 0.75);
+  color: #fff;
+  font-size: 1.1rem;
+  cursor: pointer;
+  z-index: 10;
+}
+
+.place-profile-head {
+  padding: 24px 20px 18px;
+  background: linear-gradient(135deg, #F8FAFC, #EFF6FF);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.place-profile-head img {
+  width: 78px;
+  height: 78px;
+  border-radius: 18px;
+  object-fit: cover;
+  border: 2px solid #fff;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.1);
+}
+.place-profile-offers { padding: 18px; display: grid; gap: 12px; }
+
+.mini-offer-row {
+  display: flex;
+  gap: 12px;
+  background: #F8FAFC;
+  border: 1px solid var(--border);
+  padding: 10px;
+  border-radius: 14px;
+  align-items: center;
+}
+.mini-offer-row img { width: 72px; height: 72px; border-radius: 10px; object-fit: cover; flex-shrink: 0; }
+
+/* الفوتر */
+footer {
+  background: var(--navy);
+  color: #CBD5E1;
+  text-align: center;
+  padding: 36px 20px;
+}
+footer h3 { color: #fff; font-size: 1.35rem; margin-bottom: 6px; }
+footer p { font-size: 0.9rem; }
+
+.empty-state {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 45px 20px;
+  background: #fff;
+  border-radius: 18px;
+  color: var(--muted);
+  font-weight: 700;
+}
+
+@media (max-width: 640px) {
+  .banner-slide { height: 210px; }
+  .banner-title { font-size: 1.1rem; }
+  .brand span { display: none; }
+  .offers-grid { grid-template-columns: 1fr; }
+}
